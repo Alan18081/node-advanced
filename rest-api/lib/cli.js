@@ -9,6 +9,20 @@ const e = new CustomEvents();
 
 const cli = {};
 
+e.on('man', str => {
+	cli.responders.help();
+});
+
+e.on('exit', () => {
+	cli.responders.exit();
+});
+
+cli.responders = {
+
+};
+
+
+
 cli.processInput = str => {
 	str = typeof str === 'string' && str.trim().length > 0 ? str.trim() : false;
 
@@ -32,6 +46,8 @@ cli.processInput = str => {
 			if(str.indexOf(input) > -1) {
 				matchFound = true;
 				e.emit(input, str);
+
+				return true;
 			}
 		});
 
