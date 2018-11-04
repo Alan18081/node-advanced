@@ -12,6 +12,12 @@ environments.staging = {
 		fromPhone: '+380500337230',
 		accountSid: 'AC29c4b0e7393e7fa4a1a19f4dcf312463',
 		authToken: '9bc3499fc7e72b6a4520cb1ffad1dba5'
+	},
+	templateGlobals: {
+		appName: 'Time Checker',
+		companyName: 'Inc SpaceX',
+		yearCreated: '2018',
+		baseUrl: 'http://localhost:3000'
 	}
 };
 
@@ -26,6 +32,12 @@ environments.production = {
 		fromPhone: '380662714786',
 		accountSid: 'AC29c4b0e7393e7fa4a1a19f4dcf312463',
 		authToken: '9bc3499fc7e72b6a4520cb1ffad1dba5'
+	},
+	templateGlobals: {
+		appName: 'Time Checker',
+		companyName: 'Inc SpaceX',
+		yearCreated: '2018',
+		baseUrl: 'http://localhost:3000'
 	}
 };
 

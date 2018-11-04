@@ -43,7 +43,11 @@ const serverHandler = (req, res) => {
 	req.on('end', () => {
 		buffer += decoder.end();
 
-		const chosenHandler = router[trimmedPath] ? router[trimmedPath] : handlers.notFound;
+		let chosenHandler = router[trimmedPath] ? router[trimmedPath] : handlers.notFound;
+
+		chosenHandler = trimmedPath.indexOf('public') > -1 ? handlers.public : chosenHandler;
+
+
 		const data = {
 			trimmedPath,
 			query,
@@ -54,17 +58,9 @@ const serverHandler = (req, res) => {
 
 		chosenHandler(data, (statusCode = 200, payload = {}, contentType = 'json') => {
 
-			let payloadString;
-
-			if(contentType === 'json') {
-				res.setHeader('Content-Type', 'application/json');
-				payloadString = JSON.stringify(payload);
-			}
-
-			if(contentType === 'html') {
-				res.setHeader('Content-Type', 'text/html');
-				payloadString = typeof payload === 'string' ? payload : '';
-			}
+			const { contentTypeHeader, payloadString } = helpers.getPayload(payload, contentType);
+			res.setHeader('Content-Type', contentTypeHeader);
+			// debug('Content type', contentTypeHeader, payload);
 
 			res.writeHead(statusCode);
 
@@ -74,10 +70,7 @@ const serverHandler = (req, res) => {
 				debug('\x1b[32m%s\x1b[0m', `${method.toUpperCase()} ${parsedUrl.href}`);
 			} else {
 				debug('\x1b[31m%s\x1b[0m', `${method.toUpperCase()} ${parsedUrl.href}`);
-
 			}
-
-			debug('Response payload', payload);
 		});
 
 	});
@@ -113,7 +106,9 @@ const router = {
 	'ping': handlers.ping,
 	'api/users': handlers.users,
 	'api/tokens': handlers.tokens,
-	'api/checks': handlers.checks
+	'api/checks': handlers.checks,
+	'favicon.ico': handlers.favicon,
+	'public': handlers.public
 };
 
 module.exports = server;

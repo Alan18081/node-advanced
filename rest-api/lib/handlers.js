@@ -4,17 +4,118 @@ const config = require('../config');
 
 // Define the handlers
 const handlers = {
+
 	index(data, callback) {
 		if(data.method === 'get') {
-			helpers.getTemplate('index', (err, str) => {
+
+			const templateData = {
+				'head.title': 'Main page',
+				'head.description': 'Main page of app',
+				'body.title': 'Hello, templated world',
+				'body.class': 'index'
+			};
+
+			helpers.getTemplate('index', templateData, (err, str) => {
 				if(!err && str) {
-					callback(200, str, 'html');
+					helpers.addUniversalTemplates(str, templateData, (err, fullTemplate) => {
+						if(!err && fullTemplate) {
+							callback(200, fullTemplate, 'html');
+						} else {
+							callback(500, { error: 'Failed to render template' });
+						}
+					});
 				} else {
 					callback(500, { error: 'Failed to get page' });
 				}
 			})
+		} else {
+			callback(405);
 		}
 	},
+
+	accountCreate(data, callback) {
+		if(data.method === 'get') {
+
+			const templateData = {
+				'head.title': 'Create an account',
+				'head.description': 'Main page of app',
+				'body.title': 'Hello, templated world',
+				'body.class': 'index'
+			};
+
+			helpers.getTemplate('accountCreate', templateData, (err, str) => {
+				if(!err && str) {
+					helpers.addUniversalTemplates(str, templateData, (err, fullTemplate) => {
+						if(!err && fullTemplate) {
+							callback(200, fullTemplate, 'html');
+						} else {
+							callback(500, { error: 'Failed to render template' });
+						}
+					});
+				} else {
+					callback(500, { error: 'Failed to get page' });
+				}
+			})
+		} else {
+			callback(405);
+		}
+	},
+
+	favicon(data, callback) {
+		if(data.method === 'get') {
+			helpers.getStaticAsset('favicon.ico', (err, data) => {
+				if(!err && data) {
+					callback(200, data, 'favicon');
+				} else {
+					 callback(500, { error: 'Failed to get favicon' });
+				}
+			});
+		}
+	},
+
+	public(data, callback) {
+		if(data.method === 'get') {
+			const trimmedAssetName = data.trimmedPath.replace('public/', '').trim();
+			if(trimmedAssetName.length > 0) {
+				helpers.getStaticAsset(trimmedAssetName, (err, data) => {
+					if(!err && data) {
+						let contentType = 'plain';
+
+						if(trimmedAssetName.indexOf('.css') > -1) {
+							contentType = 'css';
+						}
+
+						if(trimmedAssetName.indexOf('.png') > -1) {
+							contentType = 'png';
+						}
+
+						if(trimmedAssetName.indexOf('.jpg') > -1) {
+							contentType = 'jpg';
+						}
+
+						if(trimmedAssetName.indexOf('.jpeg') > -1) {
+							contentType = 'jpeg';
+						}
+
+						if(trimmedAssetName.indexOf('.css') > -1) {
+							contentType = 'css';
+						}
+
+						if(trimmedAssetName.indexOf('.js') > -1) {
+							contentType = 'js';
+						}
+
+						callback(200, data, contentType);
+					}
+				});
+			} else {
+				callback(404);
+			}
+		} else {
+			callback(405);
+		}
+	},
+
 	ping(data, callback) {
 		callback(406, { name: 'Sample handler' });
 	},

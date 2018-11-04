@@ -8,21 +8,23 @@
   <meta name="description" content="{head.description}">
 
   <link type="image/x-icon" rel="icon" href="favicon.ico">
-  <link type="text/css" rel="stylesheet" href="main.css">
-  <script src="main.js"></script>
+  <link type="text/css" rel="stylesheet" href="public/bootstrap.min.css">
+  <link type="text/css" rel="stylesheet" href="public/main.css">
+  <script src="public/main.js"></script>
 
 </head>
 <body class="{body.class}">
   <div class="wrapper">
-    <header class="header">
+    <header class="navbar navbar-light">
       <a href="/">Logo</a>
 
-      <ul class="menu">
-        <li><a href="/">Home</a></li>
-        <li><a href="/" class="loggedOut">Sign Up</a></li>
-        <li><a href="/" class="loggedIn"></a></li>
-        <li><a href="/" class="loggedIn"></a></li>
-        <li><a href="/" class="loggedIn"></a></li>
+      <ul class="nav">
+        <li><a href="/" class="nav-link">Home</a></li>
+        <li><a href="/account/create" class="nav-link loggedOut">Sign Up</a></li>
+        <li><a href="/session/create" class="nav-link loggedOut">Login</a></li>
+        <li><a href="/checks/all" class="nav-link loggedIn">Dashboard</a></li>
+        <li><a href="/account/edit" class="nav-link loggedIn">Account Settings</a></li>
+        <li><a href="#" class="nav-link loggedIn">Logout</a></li>
       </ul>
 
     </header>

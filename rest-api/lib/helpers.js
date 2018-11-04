@@ -82,13 +82,37 @@ helpers.sendTwilioSMS = (phone, msg, callback) => {
 
 };
 
-helpers.getTemplate = (name, callback) => {
+
+helpers.addUniversalTemplates = (str, data, callback) => {
+	str = typeof str === 'string' && str.length > 0 ? str : '';
+	data = typeof data === 'object' && data !== null ? data : {};
+
+	helpers.getTemplate( '_header', data, (err, header) => {
+		if(!err && header) {
+			helpers.getTemplate('_footer', data, (err, footer) => {
+				if(!err && footer) {
+					const interpolatedTemplate = header + str + footer;
+					callback(false, interpolatedTemplate);
+				} else {
+					callback(err);
+				}
+			});
+		} else {
+			callback(err);
+		}
+	});
+};
+
+helpers.getTemplate = (name, data, callback) => {
 	const templateName = typeof name === 'string' && name.length > 1 ? name : false;
+	const dataObj = typeof data === 'object' ? data : {};
+
 	if(templateName) {
 		const templatesDir = path.join(__dirname, '/../templates/');
-		fs.readFile(templatesDir + templateName + '.html', 'utf8', (err, data) => {
-			if(!err && data && data.length > 0) {
-				callback(false, data);
+		fs.readFile(templatesDir + templateName + '.html', 'utf8', (err, template) => {
+			if(!err && template && template.length > 0) {
+				const str = helpers.interpolate(template, dataObj);
+				callback(false, str);
 			} else {
 				callback('Failed to read template');
 			}
@@ -112,6 +136,74 @@ helpers.interpolate = (str, data) => {
 		if(data.hasOwnProperty(key)) {
 			str = str.replace(`{${key}}`, data[key]);
 		}
+	}
+
+	return str;
+};
+
+helpers.getPayload = (payload, contentType) => {
+	let payloadString;
+	let contentTypeHeader;
+
+	if(contentType === 'json') {
+		contentTypeHeader = 'application/json';
+		payloadString = JSON.stringify(payload);
+	}
+
+	if(contentType === 'html') {
+		contentTypeHeader = 'text/html';
+		payloadString = typeof payload === 'string' ? payload : '';
+	}
+
+	if(contentType === 'favicon') {
+		contentTypeHeader = 'image/x-icon';
+		payloadString = !!payload ? payload : '';
+	}
+
+	if(contentType === 'png') {
+		contentTypeHeader = 'image/png';
+		payloadString = !!payload ? payload : '';
+	}
+
+	if(contentType === 'css') {
+		contentTypeHeader = 'text/css';
+		payloadString = !!payload ? payload : '';
+	}
+
+	if(contentType === 'jpg') {
+		contentTypeHeader = 'image/jpg';
+		payloadString = !!payload ? payload : '';
+	}
+
+	if(contentType === 'js') {
+		contentTypeHeader = 'application/javascript';
+		payloadString = !!payload ? payload : '';
+	}
+
+	if(contentType === 'plain') {
+		contentTypeHeader = 'text/plain';
+		payloadString = typeof payload === 'string' ? payload : '';
+	}
+
+
+	return {
+		contentTypeHeader,
+		payloadString
+	}
+};
+
+helpers.getStaticAsset = (filename, callback) => {
+	filename = typeof filename === 'string' && filename.length > 0 ? filename : false;
+	if(filename) {
+		fs.readFile(path.join(__dirname, '../public/' + filename), (err, data) => {
+			if(!err && data) {
+				callback(false, data);
+			} else {
+				callback(err);
+			}
+		});
+	} else {
+		callback('Invalid filename');
 	}
 };
 
