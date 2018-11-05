@@ -21,6 +21,25 @@ environments.staging = {
 	}
 };
 
+environments.testing = {
+  httpPort: 4000,
+  httpsPort: 4001,
+  envName: 'testing',
+  hashSecret: 'Some secret',
+  maxChecks: 5,
+  twilio: {
+    fromPhone: '+380500337230',
+    accountSid: 'AC29c4b0e7393e7fa4a1a19f4dcf312463',
+    authToken: '9bc3499fc7e72b6a4520cb1ffad1dba5'
+  },
+  templateGlobals: {
+    appName: 'Time Checker',
+    companyName: 'Inc SpaceX',
+    yearCreated: '2018',
+    baseUrl: 'http://localhost:3000'
+  }
+};
+
 // Production
 environments.production = {
 	httpPort: 5000,

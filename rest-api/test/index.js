@@ -1,17 +1,10 @@
-const helpers = require('../lib/helpers');
-const assert = require('assert');
+
 
 const app = {};
 
 app.tests = {};
 
-app.tests.unit = {};
-
-app.tests.unit['helpers.getNumber should return number'] = done => {
-  const res = helpers.getNumber();
-  assert.equal(res, 1);
-  done();
-};
+app.tests.unit = require('./unit');
 
 app.getTestsCount = () => {
   let counter = 0;
@@ -24,6 +17,19 @@ app.getTestsCount = () => {
       }
     }
   }
+
+  return counter;
+};
+
+app.produceTestReport = (limit, successes, errors) => {
+  console.log('');
+  console.log('---- TEST REPORT ----');
+  console.log('');
+
+  console.log('Test\'s count:', limit);
+  console.log('\x1b[32mPassed: %s\x1b[0m', successes);
+  console.log('\x1b[31mFailed: %s\x1b[0m', errors.length);
+
 };
 
 app.runTests = () => {
@@ -39,6 +45,7 @@ app.runTests = () => {
         if(subTests.hasOwnProperty(testName)) {
           try {
             subTests[testName](() => {
+              console.log('\x1b[32m%s\x1b[0m', testName);
               counter++;
               successes++;
               if(counter === limit) {
@@ -46,6 +53,7 @@ app.runTests = () => {
               }
             });
           } catch (e) {
+            console.log('\x1b[31m%s\x1b[0m', testName);
             counter++;
             errors.push({
               name: testName,
@@ -60,3 +68,5 @@ app.runTests = () => {
     }
   }
 };
+
+app.runTests();

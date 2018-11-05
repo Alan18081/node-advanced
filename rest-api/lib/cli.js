@@ -5,6 +5,7 @@ const events = require('events');
 const os = require('os');
 const v8 = require('v8');
 const _data = require('./data');
+const logs = require('./logs');
 
 class CustomEvents extends events {}
 
@@ -20,7 +21,7 @@ const COMMANDS = {
   listChecks: 'list checks',
   moreCheckInfo: 'more check info',
   listLogs: 'list logs',
-  moreLogsInfo: 'more log info'
+  moreLogInfo: 'more log info'
 };
 
 const cli = {};
@@ -53,6 +54,14 @@ e.on(COMMANDS.moreCheckInfo, str => {
 	cli.responders.moreCheckInfo(str);
 });
 
+e.on(COMMANDS.listLogs, () => {
+	cli.responders.listLogs();
+});
+
+e.on(COMMANDS.moreLogInfo, str => {
+	cli.responders.moreLogInfo(str);
+});
+
 e.on('exit', () => {
 	cli.responders.exit();
 });
@@ -69,7 +78,7 @@ cli.responders = {
 			[`${COMMANDS.listChecks} --up --down`]: 'Show list of all checks ("--up" and "--down" are optional)',
 			[`${COMMANDS.moreCheckInfo} --{checkId}`]: 'Show info for particular check',
       [`${COMMANDS.listLogs} --compressed --uncompressed`]: 'Show list of all logs (compressed and uncompressed)',
-      [`${COMMANDS.moreLogsInfo} --{logId}`] : 'Show info for particular log',
+      [`${COMMANDS.moreLogInfo} --{logId}`] : 'Show info for particular log',
 		};
 
 		cli.horizontalLine();
@@ -185,26 +194,31 @@ cli.responders = {
 	listLogs(str) {
     cli.header('ALL LOGS');
 
-    _data.list('users', (err, usersList) => {
-      if(!err && usersList && usersList.length > 0) {
-        usersList.forEach(filename => {
-          _data.read('users', filename, (err, userData) => {
-            if(!err && userData) {
-              const checksList = typeof userData.checks === 'object' && userData.checks instanceof Array ? userData.checks : [];
-              console.log(`
-								Name: ${userData.firstName} ${userData.lastName}\n
-								Phone: ${userData.phone}\n
-								Number of checks: ${checksList.length}
-							`);
-            } else {
-              cli.error('Failed to load user info', err);
-            }
-          });
-        });
+    logs.list(true, (err, logsList) => {
+      if(!err && logsList && logsList.length > 0) {
+        logsList.forEach(filename => {
+        	console.log(filename);
+        	cli.verticalSpace();
+				});
       } else {
-        cli.error('Failed to load user\'s list', err);
+        cli.error('Failed to load log\'s list', err);
       }
     });
+	},
+	moreLogInfo(str) {
+    const commandsArray = str.split('--');
+    const logId = typeof commandsArray[1] === 'string' && commandsArray.length > 0 ? commandsArray[1] : false;
+    if(logId) {
+      _data.read('logs', logId, (err, checkData) => {
+        if(!err && checkData) {
+          console.dir(checkData, { colors: true });
+        } else {
+          cli.error('Failed to get check by id');
+        }
+      });
+    } else {
+      cli.error('Invalid check\'s id');
+    }
 	}
 };
 

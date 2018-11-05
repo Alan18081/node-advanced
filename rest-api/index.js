@@ -13,6 +13,11 @@ const app = {
 	}
 };
 
-app.init();
+
+console.log(require.main);
+
+if(require.main === module) {
+  app.init();
+}
 
 module.exports = app;
