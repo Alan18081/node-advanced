@@ -15,6 +15,8 @@ helpers.parseJson = (string) => {
 	}
 };
 
+helpers.getNumber = () => 1;
+
 helpers.hash = (string) => {
 	if(typeof string === 'string' && string.length) {
 		const hash = crypto

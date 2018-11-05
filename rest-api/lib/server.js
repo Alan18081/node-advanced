@@ -56,6 +56,8 @@ const serverHandler = (req, res) => {
 			payload: helpers.parseJson(buffer)
 		};
 
+		debugger;
+
 		chosenHandler(data, (statusCode = 200, payload = {}, contentType = 'json') => {
 
 			const { contentTypeHeader, payloadString } = helpers.getPayload(payload, contentType);
